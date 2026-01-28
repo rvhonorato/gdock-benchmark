@@ -71,7 +71,7 @@ for complex_dir in "$DATA_DIR"/*/; do
 
   # Run gdock with timing
   start_time=$(date +%s.%N)
-  if "$GDOCK" run \
+  if "./$GDOCK" run \
     --receptor "$receptor" \
     --ligand "$ligand" \
     --restraints "$restraints" \
