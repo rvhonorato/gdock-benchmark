@@ -15,7 +15,7 @@ for complex_dir in "$DATA_DIR"/*/; do
   output="$complex_dir/restraints.txt"
 
   if [[ -f "$receptor" && -f "$ligand" ]]; then
-    restraints=$("$GDOCK" restraints --receptor "$receptor" --ligand "$ligand" --cutoff "$CUTOFF")
+    restraints=$("./$GDOCK" restraints --receptor "$receptor" --ligand "$ligand" --cutoff "$CUTOFF")
     echo "$restraints" >"$output"
     n_pairs=$(echo "$restraints" | tr ',' '\n' | wc -l)
     echo "  $pdb_id: $n_pairs pairs"
