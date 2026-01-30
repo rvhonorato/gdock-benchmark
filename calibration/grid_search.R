@@ -90,9 +90,13 @@ n_combinations <- nrow(weights_grid)
 # Run the search
 #===========================================================================#
 
-# Setup parallelism
+# Setup parallelism (parallel is part of base R since v2.14.0)
+if (!requireNamespace("parallel", quietly = TRUE)) {
+  stop("Package 'parallel' not available. Requires R >= 2.14.0")
+}
 library(parallel)
-n_cores <- detectCores() - 1 # leave 1 core free
+n_cores <- max(1, detectCores() - 1) # leave 1 core free, minimum 1
+cat(sprintf("Detected %d cores, using %d\n", detectCores(), n_cores))
 cl <- makeCluster(n_cores)
 
 # Export necessary data and functions to all worker processes

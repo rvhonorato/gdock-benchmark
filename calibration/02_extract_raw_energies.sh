@@ -9,24 +9,32 @@
 set -euo pipefail
 shopt -s nullglob
 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PREPARED_DIR="data/prepared"
 OUTPUT_DIR="results"
-GDOCK="../target/release/gdock"
 TEMP_DIR=$(mktemp -d)
 N_JOBS=$(( $(nproc) - 2 ))
 # Ensure at least 1 job
 [[ $N_JOBS -lt 1 ]] && N_JOBS=1
 
 # Cleanup temp dir on exit
-trap "rm -rf $TEMP_DIR" EXIT
+trap 'rm -rf "$TEMP_DIR"' EXIT
 
-# Build gdock if not already built
-if [[ ! -f "$GDOCK" ]]; then
+# Find gdock binary: check local first, then try to build from source
+if [[ -x "$SCRIPT_DIR/gdock" ]]; then
+  GDOCK="$SCRIPT_DIR/gdock"
+elif [[ -x "$SCRIPT_DIR/../target/release/gdock" ]]; then
+  GDOCK="$SCRIPT_DIR/../target/release/gdock"
+elif [[ -f "$SCRIPT_DIR/../Cargo.toml" ]]; then
   echo "Building gdock..."
-  cd ..
-  cargo build --release
-  cd calibration
+  cargo build --release --manifest-path "$SCRIPT_DIR/../Cargo.toml"
+  GDOCK="$SCRIPT_DIR/../target/release/gdock"
+else
+  echo "ERROR: gdock binary not found and cannot build from source"
+  echo "Either place gdock binary in $SCRIPT_DIR or ensure Cargo.toml exists in parent directory"
+  exit 1
 fi
+echo "Using: $GDOCK"
 
 # Create output directory
 mkdir -p "$OUTPUT_DIR"
@@ -92,11 +100,11 @@ echo "Merging results..."
 echo -e "complex\tmodel\tscore\tvdw\telec\tdesolv\tw_vdw\tw_elec\tw_desolv\tw_air" > "$output_file"
 
 # Merge all temp files (sorted by complex name for reproducibility)
-for f in $(ls "$TEMP_DIR"/*.tsv 2>/dev/null | sort); do
-  cat "$f" >> "$output_file"
+for f in "$TEMP_DIR"/*.tsv; do
+  [[ -f "$f" ]] && cat "$f" >> "$output_file"
 done
 
-n_complexes=$(ls "$TEMP_DIR"/*.tsv 2>/dev/null | wc -l)
+n_complexes=$(find "$TEMP_DIR" -name "*.tsv" -type f | wc -l)
 echo
 echo "Done! Scored $n_complexes complexes"
 echo "Results: $output_file"

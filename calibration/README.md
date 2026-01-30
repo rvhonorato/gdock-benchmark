@@ -4,7 +4,7 @@
 
 This pipeline calibrates the energy function weights for gdock using the dockground bound docking decoys benchmark. The goal is to find the optimal combination of weights for VDW, electrostatics, and desolvation terms that best ranks near-native structures.
 
-## tl:dr
+## tl;dr
 
 Run the entire calibration pipeline:
 
