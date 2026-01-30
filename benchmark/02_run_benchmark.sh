@@ -4,10 +4,11 @@
 # Usage: ./02_run_benchmark.sh [nproc]
 #   nproc: number of processors to use (default: total - 2)
 
+set -euo pipefail
+
 DATA_DIR="data"
 RESULTS_DIR="results"
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-GDOCK="$SCRIPT_DIR/gdock"
+GDOCK="gdock"
 
 # Number of processors - override via command line or edit here for different machines
 NPROC="${1:-}"
@@ -59,9 +60,9 @@ for complex_dir in "$DATA_DIR"/*/; do
   echo -n "[$current/$total] $pdb_id: "
 
   # Build nproc argument if set
-  NPROC_ARG=""
+  NPROC_ARGS=()
   if [[ -n "$NPROC" ]]; then
-    NPROC_ARG="--nproc $NPROC"
+    NPROC_ARGS=(--nproc "$NPROC")
   fi
 
   # Count atoms and restraints for timing analysis
@@ -72,13 +73,13 @@ for complex_dir in "$DATA_DIR"/*/; do
 
   # Run gdock with timing
   start_time=$(date +%s.%N)
-  if "$GDOCK" run \
+  if "./$GDOCK" run \
     --receptor "$receptor" \
     --ligand "$ligand" \
     --restraints "$restraints" \
     --reference "$reference" \
     --output-dir "$output_dir" \
-    $NPROC_ARG \
+    "${NPROC_ARGS[@]}" \
     >"$output_dir.log" 2>&1; then
     end_time=$(date +%s.%N)
     elapsed=$(echo "$end_time - $start_time" | bc)

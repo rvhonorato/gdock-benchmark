@@ -1,6 +1,8 @@
 #!/bin/bash
 # Download and organize BM5.5 dataset
 
+set -euo pipefail
+
 DOWNLOAD_URL="https://zlab.wenglab.org/benchmark/benchmark5.5.tgz"
 ARCHIVE="benchmark5.5.tgz"
 DATA_DIR="data"

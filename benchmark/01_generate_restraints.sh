@@ -1,9 +1,10 @@
 #!/bin/bash
 # Generate interface restraints for all complexes
 
+set -euo pipefail
+
 DATA_DIR="data"
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-GDOCK="$SCRIPT_DIR/gdock"
+GDOCK="gdock"
 CUTOFF="${1:-5.0}" # Default 5.0A, can be overridden via argument
 
 echo "Generating restraints with cutoff=${CUTOFF}A"
@@ -16,7 +17,7 @@ for complex_dir in "$DATA_DIR"/*/; do
   output="$complex_dir/restraints.txt"
 
   if [[ -f "$receptor" && -f "$ligand" ]]; then
-    restraints=$("$GDOCK" restraints --receptor "$receptor" --ligand "$ligand" --cutoff "$CUTOFF")
+    restraints=$("./$GDOCK" restraints --receptor "$receptor" --ligand "$ligand" --cutoff "$CUTOFF")
     echo "$restraints" >"$output"
     n_pairs=$(echo "$restraints" | tr ',' '\n' | wc -l)
     echo "  $pdb_id: $n_pairs pairs"
