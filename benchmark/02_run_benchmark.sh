@@ -6,7 +6,8 @@
 
 DATA_DIR="data"
 RESULTS_DIR="results"
-GDOCK="gdock"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+GDOCK="$SCRIPT_DIR/gdock"
 
 # Number of processors - override via command line or edit here for different machines
 NPROC="${1:-}"
@@ -71,7 +72,7 @@ for complex_dir in "$DATA_DIR"/*/; do
 
   # Run gdock with timing
   start_time=$(date +%s.%N)
-  if "./$GDOCK" run \
+  if "$GDOCK" run \
     --receptor "$receptor" \
     --ligand "$ligand" \
     --restraints "$restraints" \
