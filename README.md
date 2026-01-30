@@ -55,8 +55,6 @@ Output:
 - `results/grid_search_results.tsv` — all weight combinations tested
 - `results/optimized_weights.json` — best weights
 
-See [calibration/README.md](calibration/README.md) for details.
-
 ## Requirements
 
 - bash, wget, tar
