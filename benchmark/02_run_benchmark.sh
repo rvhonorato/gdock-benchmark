@@ -39,7 +39,7 @@ echo ""
 for complex_dir in "$DATA_DIR"/*/; do
   echo $complex_dir
   pdb_id=$(basename "$complex_dir")
-  ((current++))
+  ((++current))
 
   receptor="$complex_dir/receptor.pdb"
   ligand="$complex_dir/ligand.pdb"
