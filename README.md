@@ -16,7 +16,7 @@ cd benchmark
 ./01_generate_restraints.sh
 
 # Run docking on all complexes - this step will take a while
-nohup ./02_run_benchmark.sh &
+nohup ./02_run_benchmark.sh 64 &
 
 # Extract and plot results
 Rscript 03_extract_results.R
