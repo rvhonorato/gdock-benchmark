@@ -36,7 +36,15 @@ echo "Running benchmark on $total complexes"
 echo "Using $NPROC_USED processors per run"
 echo ""
 
-for complex_dir in "$DATA_DIR"/*/; do
+# Sort complexes largest-first by total atom count so heavy jobs run early
+mapfile -t complex_dirs < <(
+  for d in "$DATA_DIR"/*/; do
+    n=$(grep -ch "^ATOM" "$d/receptor.pdb" "$d/ligand.pdb" 2>/dev/null | awk '{s+=$1} END{print s+0}')
+    echo "$n $d"
+  done | sort -rn | awk '{print $2}'
+)
+
+for complex_dir in "${complex_dirs[@]}"; do
   echo $complex_dir
   pdb_id=$(basename "$complex_dir")
   ((++current))
