@@ -37,6 +37,7 @@ echo "Using $NPROC_USED processors per run"
 echo ""
 
 for complex_dir in "$DATA_DIR"/*/; do
+  echo $complex_dir
   pdb_id=$(basename "$complex_dir")
   ((current++))
 
