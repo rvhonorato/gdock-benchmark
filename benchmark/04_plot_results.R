@@ -24,6 +24,9 @@ ACCEPTABLE <- 0.23
 MEDIUM <- 0.49
 HIGH <- 0.80
 
+# Normalize wall-clock time by core count so runs with different nproc are comparable
+timing$cpu_time_s <- timing$time_s * timing$nproc
+
 # --- Plot 1: DockQ category barplot ---
 # Get best DockQ per complex
 best_dockq <- aggregate(dockq ~ complex, data = results, FUN = max)
@@ -48,7 +51,7 @@ bp <- barplot(
   xlab = "DockQ category",
   ylim = c(0, max(category_counts) * 1.15)
 )
-abline(h = seq(25, max(category_counts), by = 25), col = "gray80", lty = 2)
+if (max(category_counts) >= 25) abline(h = seq(25, max(category_counts), by = 25), col = "gray80", lty = 2)
 barplot(category_counts, col = c("gray60", "#c7e9c0", "#74c476", "#238b45"), add = TRUE)
 bar_labels <- sprintf("%d (%.1f%%)", category_counts, 100 * category_counts / sum(category_counts))
 text(bp, category_counts + max(category_counts) * 0.03, labels = bar_labels, cex = 0.9)
@@ -59,14 +62,18 @@ legend("top",
        bty = "n", inset = c(0, -0.05), xpd = TRUE)
 dev.off()
 
-# --- Plot 2: Timing histogram ---
-avg_time <- mean(timing$time_s)
-median_time <- median(timing$time_s)
+if (nrow(timing) == 0) {
+  message("timing.tsv has no data rows — skipping timing plots (plots 2, 3, 5)")
+} else {
 
-# Create bins: 0-10, 10-20, ..., 100+
-time_breaks <- c(seq(0, 100, by = 10), Inf)
-time_labels <- c(paste0(seq(0, 90, by = 10), "-", seq(10, 100, by = 10)), ">100")
-timing$bin <- cut(timing$time_s, breaks = time_breaks, labels = time_labels, right = FALSE)
+# --- Plot 2: Timing histogram ---
+avg_time <- mean(timing$cpu_time_s)
+median_time <- median(timing$cpu_time_s)
+
+# Create bins: 0-100, 100-200, ..., 1000+
+time_breaks <- c(seq(0, 1000, by = 100), Inf)
+time_labels <- c(paste0(seq(0, 900, by = 100), "-", seq(100, 1000, by = 100)), ">1000")
+timing$bin <- cut(timing$cpu_time_s, breaks = time_breaks, labels = time_labels, right = FALSE)
 bin_counts <- table(timing$bin)
 
 pdf(file.path(results_dir, "plot_timing_histogram.pdf"), width = 8, height = 5)
@@ -80,14 +87,14 @@ bp <- barplot(
   ylim = c(0, max(bin_counts) * 1.15),
   names.arg = rep("", length(time_labels))
 )
-abline(h = seq(20, max(bin_counts), by = 20), col = "gray80", lty = 2)
+if (max(bin_counts) >= 20) abline(h = seq(20, max(bin_counts), by = 20), col = "gray80", lty = 2)
 barplot(bin_counts, col = "steelblue", add = TRUE, names.arg = rep("", length(time_labels)))
 text(bp, bin_counts + max(bin_counts) * 0.03, labels = bin_counts, cex = 0.8)
 text(bp, par("usr")[3] - max(bin_counts) * 0.02, labels = time_labels, srt = 45, adj = 1, xpd = TRUE, cex = 0.9)
-mtext("Time (seconds)", side = 1, line = 4.5)
+mtext("CPU time (core-seconds)", side = 1, line = 4.5)
 legend("topright",
-       legend = c(sprintf("Mean: %.1f s", avg_time),
-                  sprintf("Median: %.1f s", median_time)),
+       legend = c(sprintf("Mean: %.0f core-s", avg_time),
+                  sprintf("Median: %.0f core-s", median_time)),
        bty = "n")
 dev.off()
 
@@ -103,11 +110,11 @@ timing$size_bin <- cut(timing$total_atoms, breaks = size_breaks, labels = size_l
 pdf(file.path(results_dir, "plot_size_vs_time.pdf"), width = 8, height = 6)
 par(mar = c(6, 4, 4, 2))
 boxplot(
-  time_s ~ size_bin, data = timing,
+  cpu_time_s ~ size_bin, data = timing,
   col = "steelblue",
-  main = "Docking Time by Complex Size",
+  main = "Docking Time by Complex Size (normalized by cores)",
   xlab = "",
-  ylab = "Time (seconds)",
+  ylab = "CPU time (core-seconds)",
   las = 2
 )
 mtext("Complex size (atoms)", side = 1, line = 4.5)
@@ -190,9 +197,9 @@ dev.off()
 # --- Plot 5: Cumulative distribution of timing ---
 pdf(file.path(results_dir, "plot_timing_cumulative.pdf"), width = 7, height = 5)
 par(mar = c(5, 4, 4, 2))
-plot(ecdf(timing$time_s),
-     main = "Cumulative Distribution of Docking Times",
-     xlab = "Time (seconds)",
+plot(ecdf(timing$cpu_time_s),
+     main = "Cumulative Distribution of Docking Times (normalized by cores)",
+     xlab = "CPU time (core-seconds)",
      ylab = "Fraction of complexes",
      col = "steelblue",
      lwd = 2,
@@ -201,10 +208,12 @@ plot(ecdf(timing$time_s),
 abline(h = seq(0.25, 0.75, by = 0.25), col = "gray80", lty = 2)
 abline(v = c(median_time, avg_time), col = c("red", "orange"), lty = 2, lwd = 1.5)
 legend("bottomright",
-       legend = c(sprintf("Median: %.1f s", median_time),
-                  sprintf("Mean: %.1f s", avg_time)),
+       legend = c(sprintf("Median: %.0f core-s", median_time),
+                  sprintf("Mean: %.0f core-s", avg_time)),
        col = c("red", "orange"), lty = 2, lwd = 1.5, bty = "n")
 dev.off()
+
+} # end timing plots guard
 
 # --- Plot 6: Score vs DockQ correlation ---
 # Remove outliers (keep scores within 95th percentile)
@@ -367,6 +376,9 @@ legend("topright",
 dev.off()
 
 # --- Plot 10: Restraints vs DockQ ---
+if (nrow(timing) == 0) {
+  message("timing.tsv has no data rows — skipping plot 10")
+} else {
 # Merge timing data (which has restraints) with best_dockq
 restraints_data <- merge(timing[, c("complex", "restraints")], best_dockq, by = "complex")
 
@@ -395,6 +407,7 @@ legend("bottomright",
                           100 * sum(restraints_data$dockq >= ACCEPTABLE) / nrow(restraints_data))),
        bty = "n")
 dev.off()
+} # end plot 10 guard
 
 # --- Plot 11: Per-complex score-DockQ correlation ---
 # Calculate Spearman correlation between score and DockQ within each complex

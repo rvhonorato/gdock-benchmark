@@ -1,0 +1,110 @@
+
+🧬 GDock v2.0.0
+   Protein-Protein Docking with Genetic Algorithm
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📁 Input Files
+  Receptor:   data/2X9A//receptor.pdb
+  Ligand:     data/2X9A//ligand.pdb
+  Reference: data/2X9A//reference.pdb (DockQ mode)
+
+🎯 Restraints: 58 pairs
+  • 336:45
+  • 337:15
+  • 337:16
+  • 337:45
+  • 337:52
+  • 340:43
+  • 340:52
+  • 341:43
+  • 341:52
+  • 343:43
+  • 344:14
+  • 344:15
+  • 344:41
+  • 344:43
+  • 344:52
+  • 344:53
+  • 344:54
+  • 347:41
+  • 348:41
+  • 351:41
+  • 361:25
+  • 363:22
+  • 363:27
+  • 365:48
+  • 410:44
+  • 410:45
+  • 411:43
+  • 411:44
+  • 411:45
+  • 414:43
+  • 414:44
+  • 415:42
+  • 415:43
+  • 415:44
+  • 415:45
+  • 415:48
+  • 415:51
+  • 416:42
+  • 416:43
+  • 416:51
+  • 417:25
+  • 417:27
+  • 417:38
+  • 417:40
+  • 417:41
+  • 417:42
+  • 417:51
+  • 418:40
+  • 418:41
+  • 419:25
+  • 419:26
+  • 419:37
+  • 419:38
+  • 419:39
+  • 419:40
+  • 419:41
+  • 420:40
+  • 421:39
+
+⚙️  Energy Weights
+  VDW=0.40 │ Elec=0.05 │ Desolv=3.40 │ AIR=1.00
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ Created 58 distance restraints
+
+🧬 Starting evolution for 250 generations
+
+
+📦 Collected 272 diverse structures in Hall of Fame
+
+🔬 Clustering Hall of Fame structures
+
+💾 Saving Results
+
+📊 Output Models (FCC Clustered)
+  model_1: cluster= 42 score=3442.8 DockQ=0.608
+    ✓ results/v2.0.0/2X9A/model_1.pdb
+  model_2: cluster=  9 score=3824.5 DockQ=0.604
+    ✓ results/v2.0.0/2X9A/model_2.pdb
+  model_3: cluster=  6 score=4580.6 DockQ=0.606
+    ✓ results/v2.0.0/2X9A/model_3.pdb
+  model_4: cluster=  5 score=4923.8 DockQ=0.606
+    ✓ results/v2.0.0/2X9A/model_4.pdb
+  model_5: cluster=  5 score=5804.1 DockQ=0.606
+    ✓ results/v2.0.0/2X9A/model_5.pdb
+
+📊 Output Models (Ranked by Score)
+  ranked_1: score=3158.4 DockQ=0.606
+    ✓ results/v2.0.0/2X9A/ranked_1.pdb
+  ranked_2: score=3246.3 DockQ=0.607
+    ✓ results/v2.0.0/2X9A/ranked_2.pdb
+  ranked_3: score=3293.0 DockQ=0.610
+    ✓ results/v2.0.0/2X9A/ranked_3.pdb
+  ranked_4: score=3369.3 DockQ=0.607
+    ✓ results/v2.0.0/2X9A/ranked_4.pdb
+  ranked_5: score=3424.2 DockQ=0.607
+    ✓ results/v2.0.0/2X9A/ranked_5.pdb
+    ✓ results/v2.0.0/2X9A/metrics.tsv
+
+✨ Done!

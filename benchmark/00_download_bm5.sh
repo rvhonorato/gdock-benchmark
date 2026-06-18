@@ -16,8 +16,12 @@ else
 fi
 
 # Extract
-echo "Extracting..."
-tar -xzf "$ARCHIVE"
+if [[ ! -d "benchmark5.5" ]]; then
+  echo "Extracting..."
+  tar -xzf "$ARCHIVE"
+else
+  echo "benchmark5.5/ already exists, skipping extraction"
+fi
 
 # Create data directory
 mkdir -p "$DATA_DIR"
@@ -30,6 +34,10 @@ for receptor in benchmark5.5/structures/*_r_b.pdb; do
   ligand="benchmark5.5/structures/${pdb_id}_l_b.pdb"
 
   if [[ -f "$ligand" ]]; then
+    if [[ -f "$DATA_DIR/$pdb_id/receptor.pdb" ]]; then
+      echo "  $pdb_id: already organized, skipping"
+      continue
+    fi
     mkdir -p "$DATA_DIR/$pdb_id"
     cp "$receptor" "$DATA_DIR/$pdb_id/receptor.pdb"
     cp "$ligand" "$DATA_DIR/$pdb_id/ligand.pdb"

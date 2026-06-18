@@ -1,0 +1,101 @@
+
+🧬 GDock v2.0.0
+   Protein-Protein Docking with Genetic Algorithm
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📁 Input Files
+  Receptor:   data/1GCQ//receptor.pdb
+  Ligand:     data/1GCQ//ligand.pdb
+  Reference: data/1GCQ//reference.pdb (DockQ mode)
+
+🎯 Restraints: 49 pairs
+  • 162:630
+  • 162:631
+  • 162:632
+  • 162:633
+  • 163:632
+  • 164:595
+  • 164:597
+  • 164:627
+  • 164:630
+  • 164:631
+  • 164:632
+  • 164:637
+  • 165:597
+  • 165:637
+  • 165:652
+  • 165:655
+  • 165:656
+  • 165:657
+  • 179:631
+  • 179:632
+  • 179:634
+  • 179:637
+  • 179:652
+  • 180:632
+  • 180:633
+  • 206:659
+  • 207:593
+  • 207:594
+  • 207:595
+  • 208:594
+  • 208:595
+  • 208:596
+  • 208:597
+  • 208:657
+  • 208:658
+  • 208:659
+  • 209:657
+  • 209:659
+  • 210:595
+  • 211:594
+  • 211:595
+  • 211:630
+  • 212:593
+  • 212:594
+  • 212:595
+  • 215:592
+  • 215:593
+  • 215:594
+  • 215:628
+
+⚙️  Energy Weights
+  VDW=0.40 │ Elec=0.05 │ Desolv=3.40 │ AIR=1.00
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ Created 49 distance restraints
+
+🧬 Starting evolution for 250 generations
+
+
+📦 Collected 240 diverse structures in Hall of Fame
+
+🔬 Clustering Hall of Fame structures
+
+💾 Saving Results
+
+📊 Output Models (FCC Clustered)
+  model_1: cluster= 37 score=2603.0 DockQ=0.554
+    ✓ results/v2.0.0/1GCQ/model_1.pdb
+  model_2: cluster=  4 score=2697.3 DockQ=0.549
+    ✓ results/v2.0.0/1GCQ/model_2.pdb
+  model_3: cluster=  9 score=3154.5 DockQ=0.632
+    ✓ results/v2.0.0/1GCQ/model_3.pdb
+  model_4: cluster= 59 score=3529.9 DockQ=0.489
+    ✓ results/v2.0.0/1GCQ/model_4.pdb
+  model_5: cluster= 18 score=7953.1 DockQ=0.347
+    ✓ results/v2.0.0/1GCQ/model_5.pdb
+
+📊 Output Models (Ranked by Score)
+  ranked_1: score=2387.5 DockQ=0.695
+    ✓ results/v2.0.0/1GCQ/ranked_1.pdb
+  ranked_2: score=2476.3 DockQ=0.539
+    ✓ results/v2.0.0/1GCQ/ranked_2.pdb
+  ranked_3: score=2523.4 DockQ=0.560
+    ✓ results/v2.0.0/1GCQ/ranked_3.pdb
+  ranked_4: score=2543.4 DockQ=0.632
+    ✓ results/v2.0.0/1GCQ/ranked_4.pdb
+  ranked_5: score=2579.0 DockQ=0.549
+    ✓ results/v2.0.0/1GCQ/ranked_5.pdb
+    ✓ results/v2.0.0/1GCQ/metrics.tsv
+
+✨ Done!
