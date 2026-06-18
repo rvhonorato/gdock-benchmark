@@ -4,40 +4,56 @@ Benchmark and weight calibration pipelines for [gdock](https://github.com/rvhono
 
 ## Setup
 
-Binaries live in `binary/` and are named `gdock-<version>`. Before running any pipeline, export the version you want to use:
+Binaries live in `binary/` and are named `gdock-<version>`. The following versions are currently available:
+
+| File | Version |
+|------|---------|
+| `binary/gdock-v2.0.0-rc.2` | 2.0.0-rc.2 |
+| `binary/gdock-v2.0.0-rc.3` | 2.0.0-rc.3 |
+| `binary/gdock-v2.0.0` | 2.0.0 |
+| `binary/gdock-v2.1.0` | 2.1.0 |
+
+To add a new version, build from source and copy the binary:
 
 ```bash
-export GDOCK_VERSION=v2.0.0-rc.2
+git -C /path/to/gdock checkout <tag>
+cargo build --release --manifest-path /path/to/gdock/Cargo.toml
+cp /path/to/gdock/target/release/gdock binary/gdock-<tag>
 ```
-
-All scripts read this variable to locate the binary and write outputs under a matching version subdirectory.
 
 ## Benchmark
 
 Evaluates gdock on the [Protein-Protein Docking Benchmark 5.5](https://zlab.wenglab.org/benchmark/).
 
+### Run all versions via SLURM
+
 ```bash
+sbatch run-benchmark.sh
+```
+
+This iterates over every binary in `binary/gdock-*` and runs the full pipeline for each version. Works with plain `bash run-benchmark.sh` as well (uses 8 cores by default).
+
+### Run a single version manually
+
+```bash
+export GDOCK_VERSION=v2.1.0
 cd benchmark
 
-# Download and prepare BM5.5
-./00_download_bm5.sh
-
-# Generate restraints from native contacts
-./01_generate_restraints.sh
-
-# Run docking on all complexes - this step will take a while
-nohup ./02_run_benchmark.sh &
-
-# Extract and plot results
-Rscript 03_extract_results.R
-Rscript 04_plot_results.R
+./00_download_bm5.sh          # download and prepare BM5.5 (once)
+./01_generate_restraints.sh   # generate restraints from native contacts
+./02_run_benchmark.sh         # run docking on all complexes
+Rscript 03_extract_results.R  # extract metrics
+Rscript 04_plot_results.R     # generate plots
 ```
+
+All scripts are idempotent — safe to re-run; completed complexes are skipped.
 
 Output (all under `results/<version>/`):
 
-- `<PDB_ID>/` — docking output per complex
+- `<PDB_ID>/` — docking output per complex (PDB files gzip-compressed)
 - `results.csv` — consolidated metrics
 - `plot_*.pdf` — benchmark visualizations
+- `timing.tsv` — per-complex timing and atom counts
 
 ## Calibration
 
@@ -69,7 +85,8 @@ Output:
 
 - bash, wget, tar
 - R (for analysis scripts)
-- gdock binary in `binary/` (e.g. `binary/gdock-v2.0.0-rc.2`)
+- gdock binaries in `binary/` (see Setup above)
+- Rust toolchain (`cargo`) to build new versions from source
 
 ## License
 
