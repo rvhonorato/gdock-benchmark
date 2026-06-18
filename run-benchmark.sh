@@ -1,7 +1,5 @@
 #!/bin/bash
 #SBATCH --job-name=gdock-bm
-#SBATCH --output=benchmark/logs/slurm-%j.out
-#SBATCH --error=benchmark/logs/slurm-%j.err
 #SBATCH --cpus-per-task=96
 
 set -euo pipefail
