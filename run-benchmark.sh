@@ -1,10 +1,8 @@
 #!/bin/bash
-#SBATCH --job-name=gdock-benchmark
+#SBATCH --job-name=gdock-bm
 #SBATCH --output=benchmark/logs/slurm-%j.out
 #SBATCH --error=benchmark/logs/slurm-%j.err
-#SBATCH --time=48:00:00
 #SBATCH --cpus-per-task=96
-#SBATCH --mem=16G
 
 set -euo pipefail
 
@@ -34,7 +32,7 @@ for binary in "${BINARY_DIR}"/gdock-*; do
   ./01_generate_restraints.sh
   echo
 
-  ./02_run_benchmark.sh "${SLURM_CPUS_PER_TASK:-8}"
+  ./02_run_benchmark.sh "${SLURM_CPUS_PER_TASK:-}"
   Rscript 03_extract_results.R
   Rscript 04_plot_results.R
 
