@@ -20,20 +20,17 @@ if [[ ! -x "$GDOCK" ]]; then
 fi
 RESULTS_DIR="results/$GDOCK_VERSION"
 
-# Number of processors - override via command line or edit here for different machines
-NPROC="${1:-}"
-
-# Create results directory
-mkdir -p "$RESULTS_DIR"
-
-# Determine actual number of processors being used
-if [[ -n "$NPROC" ]]; then
-  NPROC_USED="$NPROC"
+# Number of processors: use CLI arg if given, otherwise all CPUs minus 2
+if [[ -n "${1:-}" ]]; then
+  NPROC_USED="$1"
 else
   total_cpus=$(nproc)
   NPROC_USED=$((total_cpus - 2))
   [[ $NPROC_USED -lt 1 ]] && NPROC_USED=1
 fi
+
+# Create results directory
+mkdir -p "$RESULTS_DIR"
 
 # Initialize timing summary file (only write header if starting fresh)
 if [[ ! -f "$RESULTS_DIR/timing.tsv" ]]; then
@@ -64,12 +61,6 @@ echo ""
 for complex_dir in "${sorted_complexes[@]}"; do
   pdb_id=$(basename "$complex_dir")
   ((++current))
-  if [[ -n "${TARGET_COMPLEXES:-}" ]]; then
-    IFS=',' read -ra _targets <<<"${TARGET_COMPLEXES}"
-    _match=0
-    for _t in "${_targets[@]}"; do [[ "$_t" == "$pdb_id" ]] && _match=1 && break; done
-    [[ $_match -eq 0 ]] && continue
-  fi
 
   receptor="$complex_dir/receptor.pdb"
   ligand="$complex_dir/ligand.pdb"
@@ -96,12 +87,6 @@ for complex_dir in "${sorted_complexes[@]}"; do
 
   echo -n "[$current/$total] $pdb_id: "
 
-  # Build nproc argument if set
-  NPROC_ARGS=()
-  if [[ -n "$NPROC" ]]; then
-    NPROC_ARGS=(--nproc "$NPROC")
-  fi
-
   # Count atoms and restraints for timing analysis
   n_rec_atoms=$(grep -c "^ATOM" "$receptor" 2>/dev/null || echo 0)
   n_lig_atoms=$(grep -c "^ATOM" "$ligand" 2>/dev/null || echo 0)
@@ -117,7 +102,7 @@ for complex_dir in "${sorted_complexes[@]}"; do
     --restraints "$restraints" \
     --reference "$reference" \
     --output-dir "$output_dir" \
-    "${NPROC_ARGS[@]}" \
+    --nproc "$NPROC_USED" \
     >"$_tmp_log" 2>&1; then
     elapsed=$(($(date +%s) - start_time))
     mv "$_tmp_log" "$output_dir/$pdb_id.log"

@@ -22,12 +22,6 @@ echo ""
 
 for complex_dir in "$DATA_DIR"/*/; do
   pdb_id=$(basename "$complex_dir")
-  if [[ -n "${TARGET_COMPLEXES:-}" ]]; then
-    IFS=',' read -ra _targets <<< "${TARGET_COMPLEXES}"
-    _match=0
-    for _t in "${_targets[@]}"; do [[ "$_t" == "$pdb_id" ]] && _match=1 && break; done
-    [[ $_match -eq 0 ]] && continue
-  fi
   receptor="$complex_dir/receptor.pdb"
   ligand="$complex_dir/ligand.pdb"
   output_dir="$complex_dir/$GDOCK_VERSION"

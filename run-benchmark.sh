@@ -6,9 +6,6 @@
 
 set -euo pipefail
 
-# Uncomment to limit to specific complexes (e.g. for testing); comment out to run all.
-# export TARGET_COMPLEXES="2OOB,1GCQ,2X9A,1EFN"
-
 ROOT_DIR="$(cd "$(dirname "$0")" && pwd)"
 BINARY_DIR="${ROOT_DIR}/binary"
 BENCHMARK_DIR="${ROOT_DIR}/benchmark"
