@@ -48,30 +48,30 @@ else
 fi
 
 # Extract dataset
-echo
-echo "Extracting dataset..."
-tar -xzf "$DATA_DIR/$ARCHIVE_NAME" -C "$DATA_DIR"
-
-# Find the extracted directory
 extracted_dir=$(tar -tzf "$DATA_DIR/$ARCHIVE_NAME" | head -1 | cut -d/ -f1)
 
-if [[ -d "$DATA_DIR/$extracted_dir" ]]; then
+if [[ -d "$DATA_DIR/raw" ]]; then
+  echo "data/raw/ already exists, skipping extraction"
+else
+  echo
+  echo "Extracting dataset..."
+  tar -xzf "$DATA_DIR/$ARCHIVE_NAME" -C "$DATA_DIR"
+
+  if [[ ! -d "$DATA_DIR/$extracted_dir" ]]; then
+    echo "ERROR: Extraction failed!"
+    exit 1
+  fi
+
   # Rename to standard 'raw' directory for consistency
   if [[ "$extracted_dir" != "raw" ]]; then
     mv "$DATA_DIR/$extracted_dir" "$DATA_DIR/raw"
-    extracted_dir="raw"
   fi
-
-  # Count complexes
-  num_complexes=$(ls -1d "$DATA_DIR/$extracted_dir"/*/ 2>/dev/null | wc -l)
-
-  echo "Extraction complete!"
-  echo "Location: $DATA_DIR/$extracted_dir/"
-  echo "Complexes found: $num_complexes"
-else
-  echo "ERROR: Extraction failed!"
-  exit 1
 fi
+
+num_complexes=$(ls -1d "$DATA_DIR/raw"/*/ 2>/dev/null | wc -l)
+echo "Extraction complete!"
+echo "Location: $DATA_DIR/raw/"
+echo "Complexes found: $num_complexes"
 
 echo
 echo "Next step: ./01_prepare_dataset.sh"

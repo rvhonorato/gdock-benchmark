@@ -40,6 +40,10 @@ for archive in $archives; do
 
   # Create output directory for this complex
   output_complex_dir="$OUTPUT_DIR/$basename_file"
+  if [[ -d "$output_complex_dir" ]]; then
+    echo " $basename_file: already prepared, skipping"
+    continue
+  fi
   mkdir -p "$output_complex_dir"
   tar -xzf "$archive" -C "$output_complex_dir" 2>/dev/null
 
