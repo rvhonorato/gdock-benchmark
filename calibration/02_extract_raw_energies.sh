@@ -20,18 +20,13 @@ N_JOBS=$(( $(nproc) - 2 ))
 # Cleanup temp dir on exit
 trap 'rm -rf "$TEMP_DIR"' EXIT
 
-# Find gdock binary: check local first, then try to build from source
-if [[ -x "$SCRIPT_DIR/gdock" ]]; then
-  GDOCK="$SCRIPT_DIR/gdock"
-elif [[ -x "$SCRIPT_DIR/../target/release/gdock" ]]; then
-  GDOCK="$SCRIPT_DIR/../target/release/gdock"
-elif [[ -f "$SCRIPT_DIR/../Cargo.toml" ]]; then
-  echo "Building gdock..."
-  cargo build --release --manifest-path "$SCRIPT_DIR/../Cargo.toml"
-  GDOCK="$SCRIPT_DIR/../target/release/gdock"
-else
-  echo "ERROR: gdock binary not found and cannot build from source"
-  echo "Either place gdock binary in $SCRIPT_DIR or ensure Cargo.toml exists in parent directory"
+if [[ -z "${GDOCK_VERSION:-}" ]]; then
+  echo "ERROR: GDOCK_VERSION is not set. Run: export GDOCK_VERSION=v2.0.0-rc.2"
+  exit 1
+fi
+GDOCK="${SCRIPT_DIR}/../binary/gdock-${GDOCK_VERSION}"
+if [[ ! -x "$GDOCK" ]]; then
+  echo "ERROR: Binary not found or not executable: $GDOCK"
   exit 1
 fi
 echo "Using: $GDOCK"

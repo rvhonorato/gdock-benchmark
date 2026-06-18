@@ -6,9 +6,19 @@
 
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 DATA_DIR="data"
-RESULTS_DIR="results"
-GDOCK="gdock"
+
+if [[ -z "${GDOCK_VERSION:-}" ]]; then
+  echo "ERROR: GDOCK_VERSION is not set. Run: export GDOCK_VERSION=v2.0.0-rc.2"
+  exit 1
+fi
+GDOCK="${SCRIPT_DIR}/../binary/gdock-${GDOCK_VERSION}"
+if [[ ! -x "$GDOCK" ]]; then
+  echo "ERROR: Binary not found or not executable: $GDOCK"
+  exit 1
+fi
+RESULTS_DIR="results/$GDOCK_VERSION"
 
 # Number of processors - override via command line or edit here for different machines
 NPROC="${1:-}"
@@ -73,7 +83,7 @@ for complex_dir in "$DATA_DIR"/*/; do
 
   # Run gdock with timing
   start_time=$(date +%s.%N)
-  if "./$GDOCK" run \
+  if "$GDOCK" run \
     --receptor "$receptor" \
     --ligand "$ligand" \
     --restraints "$restraints" \

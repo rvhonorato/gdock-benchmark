@@ -2,7 +2,7 @@
 # Generate benchmark plots for gdock
 #
 # Usage: Rscript 04_plot_results.R
-# Input: results.csv, results/timing.tsv
+# Input: results/<version>/results.csv, results/<version>/timing.tsv
 
 # Set working directory to script location
 args <- commandArgs(trailingOnly = FALSE)
@@ -11,9 +11,13 @@ if (length(script_path) > 0) {
   setwd(dirname(script_path))
 }
 
+version <- Sys.getenv("GDOCK_VERSION")
+if (nchar(version) == 0) stop("GDOCK_VERSION is not set. Run: export GDOCK_VERSION=v2.0.0-rc.2")
+results_dir <- file.path("results", version)
+
 # Read data
-results <- read.csv("results.csv", stringsAsFactors = FALSE)
-timing <- read.delim("results/timing.tsv", sep = "\t", stringsAsFactors = FALSE)
+results <- read.csv(file.path(results_dir, "results.csv"), stringsAsFactors = FALSE)
+timing <- read.delim(file.path(results_dir, "timing.tsv"), sep = "\t", stringsAsFactors = FALSE)
 
 # DockQ thresholds
 ACCEPTABLE <- 0.23
@@ -34,7 +38,7 @@ best_dockq$category <- cut(
 
 category_counts <- table(best_dockq$category)
 
-pdf("plot_dockq_categories.pdf", width = 6, height = 5)
+pdf(file.path(results_dir, "plot_dockq_categories.pdf"), width = 6, height = 5)
 par(mar = c(5, 4, 4, 2))
 bp <- barplot(
   category_counts,
@@ -65,7 +69,7 @@ time_labels <- c(paste0(seq(0, 90, by = 10), "-", seq(10, 100, by = 10)), ">100"
 timing$bin <- cut(timing$time_s, breaks = time_breaks, labels = time_labels, right = FALSE)
 bin_counts <- table(timing$bin)
 
-pdf("plot_timing_histogram.pdf", width = 8, height = 5)
+pdf(file.path(results_dir, "plot_timing_histogram.pdf"), width = 8, height = 5)
 par(mar = c(6, 4, 4, 2))
 bp <- barplot(
   bin_counts,
@@ -96,7 +100,7 @@ size_breaks <- seq(0, ceiling(max_atoms / 5000) * 5000, by = 5000)
 size_labels <- paste0(size_breaks[-length(size_breaks)] / 1000, "-", size_breaks[-1] / 1000, "k")
 timing$size_bin <- cut(timing$total_atoms, breaks = size_breaks, labels = size_labels, right = FALSE)
 
-pdf("plot_size_vs_time.pdf", width = 8, height = 6)
+pdf(file.path(results_dir, "plot_size_vs_time.pdf"), width = 8, height = 6)
 par(mar = c(6, 4, 4, 2))
 boxplot(
   time_s ~ size_bin, data = timing,
@@ -150,7 +154,7 @@ n_complexes <- nrow(dockq_matrix)
 n_models <- ncol(dockq_matrix)
 cell_height <- 0.25  # inches per row
 
-pdf("plot_dockq_heatmap.pdf", width = 12, height = n_complexes * cell_height + 1.5)
+pdf(file.path(results_dir, "plot_dockq_heatmap.pdf"), width = 12, height = n_complexes * cell_height + 1.5)
 par(mar = c(4, 5, 2, 1))
 plot(NULL, xlim = c(0, n_models), ylim = c(0, n_complexes),
      xlab = "", ylab = "", xaxt = "n", yaxt = "n", bty = "n",
@@ -184,7 +188,7 @@ legend("bottom", inset = c(0, -0.03), xpd = TRUE, horiz = TRUE,
 dev.off()
 
 # --- Plot 5: Cumulative distribution of timing ---
-pdf("plot_timing_cumulative.pdf", width = 7, height = 5)
+pdf(file.path(results_dir, "plot_timing_cumulative.pdf"), width = 7, height = 5)
 par(mar = c(5, 4, 4, 2))
 plot(ecdf(timing$time_s),
      main = "Cumulative Distribution of Docking Times",
@@ -207,7 +211,7 @@ dev.off()
 score_threshold <- quantile(results$score, 0.95, na.rm = TRUE)
 results_filtered <- results[results$score <= score_threshold, ]
 
-pdf("plot_score_vs_dockq.pdf", width = 7, height = 6)
+pdf(file.path(results_dir, "plot_score_vs_dockq.pdf"), width = 7, height = 6)
 par(mar = c(5, 4, 4, 2))
 
 # Color points by quality category
@@ -268,7 +272,7 @@ for (n in 1:10) {
   top_n_success$high[n] <- 100 * n_high / n_complexes
 }
 
-pdf("plot_topn_success.pdf", width = 7, height = 5)
+pdf(file.path(results_dir, "plot_topn_success.pdf"), width = 7, height = 5)
 par(mar = c(5, 4, 4, 2))
 plot(top_n_success$n, top_n_success$acceptable, type = "b", pch = 19,
      col = "#c7e9c0", lwd = 2, ylim = c(0, 100),
@@ -298,7 +302,7 @@ best_ranked <- aggregate(dockq ~ complex, data = ranked, FUN = max, na.rm = TRUE
 
 comparison <- merge(best_clustered, best_ranked, by = "complex", suffixes = c("_clustered", "_ranked"))
 
-pdf("plot_clustered_vs_ranked.pdf", width = 6, height = 6)
+pdf(file.path(results_dir, "plot_clustered_vs_ranked.pdf"), width = 6, height = 6)
 par(mar = c(5, 4, 4, 2))
 
 # Scatter plot
@@ -328,7 +332,7 @@ legend("bottomright",
 dev.off()
 
 # --- Plot 9: DockQ distribution histogram ---
-pdf("plot_dockq_distribution.pdf", width = 7, height = 5)
+pdf(file.path(results_dir, "plot_dockq_distribution.pdf"), width = 7, height = 5)
 par(mar = c(5, 4, 4, 2))
 
 # Use best DockQ per complex
@@ -366,7 +370,7 @@ dev.off()
 # Merge timing data (which has restraints) with best_dockq
 restraints_data <- merge(timing[, c("complex", "restraints")], best_dockq, by = "complex")
 
-pdf("plot_restraints_vs_dockq.pdf", width = 7, height = 5)
+pdf(file.path(results_dir, "plot_restraints_vs_dockq.pdf"), width = 7, height = 5)
 par(mar = c(5, 4, 4, 2))
 
 # Color by success
@@ -405,7 +409,7 @@ per_complex_cor <- sapply(complexes, function(cx) {
 })
 per_complex_cor <- per_complex_cor[!is.na(per_complex_cor)]
 
-pdf("plot_per_complex_correlation.pdf", width = 7, height = 5)
+pdf(file.path(results_dir, "plot_per_complex_correlation.pdf"), width = 7, height = 5)
 par(mar = c(5, 4, 4, 2))
 
 h <- hist(per_complex_cor, breaks = seq(-1, 1, by = 0.1), plot = FALSE)

@@ -1,6 +1,16 @@
 # gdock-benchmark
 
-Benchmark and weight calibration pipelines for [gdock](https://github.com/rvhonorato/gdock) `v2.0.0-rc.2`.
+Benchmark and weight calibration pipelines for [gdock](https://github.com/rvhonorato/gdock).
+
+## Setup
+
+Binaries live in `binary/` and are named `gdock-<version>`. Before running any pipeline, export the version you want to use:
+
+```bash
+export GDOCK_VERSION=v2.0.0-rc.2
+```
+
+All scripts read this variable to locate the binary and write outputs under a matching version subdirectory.
 
 ## Benchmark
 
@@ -23,9 +33,9 @@ Rscript 03_extract_results.R
 Rscript 04_plot_results.R
 ```
 
-Output:
+Output (all under `results/<version>/`):
 
-- `results/` — docking output per complex
+- `<PDB_ID>/` — docking output per complex
 - `results.csv` — consolidated metrics
 - `plot_*.pdf` — benchmark visualizations
 
@@ -59,7 +69,7 @@ Output:
 
 - bash, wget, tar
 - R (for analysis scripts)
-- gdock binary (included as `gdock-v2.0.0-rc.2`)
+- gdock binary in `binary/` (e.g. `binary/gdock-v2.0.0-rc.2`)
 
 ## License
 
