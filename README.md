@@ -31,7 +31,7 @@ Evaluates gdock on the [Protein-Protein Docking Benchmark 5.5](https://zlab.weng
 sbatch run-benchmark.sh
 ```
 
-This iterates over every binary in `binary/gdock-*` and runs the full pipeline for each version. Works with plain `bash run-benchmark.sh` as well (uses 8 cores by default).
+This iterates over every binary in `binary/gdock-*` and runs the full pipeline for each version. Works with plain `bash run-benchmark.sh` as well.
 
 ### Run a single version manually
 

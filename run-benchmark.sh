@@ -3,15 +3,13 @@
 #SBATCH --output=benchmark/logs/slurm-%j.out
 #SBATCH --error=benchmark/logs/slurm-%j.err
 #SBATCH --time=48:00:00
-#SBATCH --cpus-per-task=8
+#SBATCH --cpus-per-task=96
 #SBATCH --mem=16G
 
 set -euo pipefail
 
-# Set to a single PDB ID to run only that complex (e.g. for testing).
-# Leave empty to run all complexes.
-export TARGET_COMPLEXES="2OOB,1GCQ,2X9A,1EFN"
-export TARGET_COMPLEX
+# Uncomment to limit to specific complexes (e.g. for testing); comment out to run all.
+# export TARGET_COMPLEXES="2OOB,1GCQ,2X9A,1EFN"
 
 ROOT_DIR="$(cd "$(dirname "$0")" && pwd)"
 BINARY_DIR="${ROOT_DIR}/binary"
