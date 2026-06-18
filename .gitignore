@@ -1,4 +1,5 @@
 nohup.out
-*.pdf
-*.svg
 .ai/
+._*
+err
+log
