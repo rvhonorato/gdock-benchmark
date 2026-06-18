@@ -4,11 +4,9 @@
 
 set -euo pipefail
 
-ROOT_DIR="$(cd "$(dirname "$0")" && pwd)"
+ROOT_DIR="${SLURM_SUBMIT_DIR:-$(cd "$(dirname "$0")" && pwd)}"
 BINARY_DIR="${ROOT_DIR}/binary"
 BENCHMARK_DIR="${ROOT_DIR}/benchmark"
-
-mkdir -p "${BENCHMARK_DIR}/logs"
 
 cd "$BENCHMARK_DIR"
 
