@@ -27,8 +27,8 @@ for binary in "${BINARY_DIR}"/gdock-*; do
   echo
 
   ./02_run_benchmark.sh "${SLURM_CPUS_PER_TASK:-}"
-  Rscript 03_extract_results.R
-  Rscript 04_plot_results.R
+  # Rscript 03_extract_results.R
+  # Rscript 04_plot_results.R
 
   echo "===== Done: results written to results/${GDOCK_VERSION}/ ====="
   echo
