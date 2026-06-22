@@ -3,3 +3,6 @@ nohup.out
 ._*
 err
 log
+slurm-*
+benchmark/results/v*/
+!benchmark/results/*.tar.xz
