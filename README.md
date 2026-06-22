@@ -55,6 +55,33 @@ Output (all under `results/<version>/`):
 - `plot_*.pdf` — benchmark visualizations
 - `timing.tsv` — per-complex timing and atom counts
 
+### Compare versions
+
+```bash
+cd benchmark
+Rscript 05_compare_versions.R
+```
+
+Reads `results/<version>/timing.tsv` for every version present and prints a summary table with DockQ category percentages and median execution time. Also writes `results/version_comparison.csv`.
+
+### Pre-computed results
+
+Results for all benchmark versions are stored in this repository as `.tar.xz` archives under `benchmark/results/` and tracked via [Git LFS](https://git-lfs.com). To use them:
+
+```bash
+# fetch LFS content (if not already)
+git lfs pull
+
+# decompress a specific version
+cd benchmark
+./06_archive_results.sh decompress v2.1.0
+
+# compress after a new run
+./06_archive_results.sh compress v2.1.0
+# or compress all versions at once
+./06_archive_results.sh compress
+```
+
 ## Calibration
 
 Optimizes energy weights (w_vdw, w_elec, w_desolv) using [Dockground](https://dockground.compbio.ku.edu/) decoys.
